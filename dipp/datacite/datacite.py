@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 
 import httplib2
+import argparse
 import urlparse
 import base64
+import os.path
 import ConfigParser
+from resources import DOI, METADATA
 
-
-# resources
-DOI = 'doi'
-METADATA = 'metadata'
-MEDIA = 'media'
 
 class Client:
     
@@ -106,22 +104,37 @@ class Client:
         POST will add/update media type/urls pairs to a DOI. Standard domain
         restrictions check will be performed.
         """
+
 def main():
-    print "a cli application. one day..."
+
+    parser = argparse.ArgumentParser(description='Manages DOIs at DataCite')
+    parser.add_argument('-d','--doi', help='registered DOI')
+    parser.add_argument('-c','--conf', help='Configuration file with access data')
+    parser.add_argument('-n','--dry-run', help='The request will not change the database nor will the DOI handle be registered or updated')
+
+    args = parser.parse_args()
+    
+    pid = args.pid
+    format = args.format
+    print format
 
 if __name__ == '__main__':
 
     doi = '10.5072/DIPP-TEST1'
 
     # read configuration
+    
     config_file = "/files/etc/datacite/dev.conf"
-    config = ConfigParser.RawConfigParser()
-    config.read(config_file)
-    user = config.get('DataCite','user')
-    password = config.get('DataCite','password')
-    endpoint = config.get('DataCite','endpoint')
-
-    x = Client(user, password, endpoint, doi)
-    #print x.get_metadata(testMode=0)
-    print x.get_url()
-
+    if os.path.isfile(config_file):
+        config = ConfigParser.RawConfigParser()
+        config.read(config_file)
+        user = config.get('DataCite','user')
+        password = config.get('DataCite','password')
+        endpoint = config.get('DataCite','endpoint')
+    
+        x = Client(user, password, endpoint, doi)
+        #print x.get_metadata(testMode=0)
+        print x.get_url()
+    else:
+        print "%s does not exist" % config_file
+    
