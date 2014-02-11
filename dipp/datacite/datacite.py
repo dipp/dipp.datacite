@@ -4,10 +4,17 @@ import httplib2
 import argparse
 import urlparse
 import base64
+import logging
 import os.path
 import ConfigParser
 from resources import DOI, METADATA
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+console = logging.StreamHandler()
+formatter = logging.Formatter('%(levelname)s - %(message)s')
+console.setFormatter(formatter)
+logger.addHandler(console)
 
 class Client:
     
@@ -37,8 +44,9 @@ class Client:
         headers = {
             'Accept':'application/xml',
             'Authorization':'Basic ' + self.auth_string
-            }
+            }   
         response, content = h.request(uri, method, headers=headers)
+        logger.info(response['status'])
         return content
 
     def create_or_modify_doi(self):
