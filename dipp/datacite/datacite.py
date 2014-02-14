@@ -9,6 +9,7 @@ import logging
 import os.path
 import ConfigParser
 from resources import DOI, METADATA
+from endpoints import ENDPOINTS
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -111,6 +112,7 @@ class Client:
             'Authorization':'Basic ' + self.auth_string
             }
         response, content = h.request(uri, method, headers=headers)
+        logger.info(response['status'])
         return content
 
     def modify_metadata(self):
