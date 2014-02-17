@@ -76,8 +76,9 @@ class Client:
             }
         
         response, content = h.request(uri, method, body=body, headers=headers)
-        logger.info(response['status'])
-        return content
+        status = response['status']
+        logger.info(status)
+        return status, content
     
     def post_metadata(self, metadata):
         """ posts new metadata but does not register the url
@@ -91,9 +92,9 @@ class Client:
             'Authorization':'Basic ' + self.auth_string
             }   
         response, content = h.request(uri, method, body=body, headers=headers)
-        logger.info(response['status'])
-        logger.info(response['location'])
-        return content
+        status = response['status']
+        logger.info(status)
+        return status, content
 
     def get_metadata(self, doi, testMode=0):
         """URI: https://test.datacite.org/mds/metadata/{doi} where {doi} is a
@@ -111,7 +112,9 @@ class Client:
             'Authorization':'Basic ' + self.auth_string
             }
         response, content = h.request(uri, method, headers=headers)
-        return content
+        status = response['status']
+        logger.info(status)
+        return status, content
 
     def modify_metadata(self):
         """URI: https://test.datacite.org/mds/metadata/{doi} where {doi} is a
@@ -189,9 +192,9 @@ if __name__ == '__main__':
         # print x.get_metadata(doi)
         # print x.get_url(doi)
         # print x.create_or_modify_doi()
-        #print x.post_metadata(md)
+        print x.post_metadata(md)
         #print x.create_or_modify_doi(doi, url)
-        print x.deactivate_doi(doi)
+        #print x.deactivate_doi(doi)
     else:
         print "%s does not exist" % config_file
     
