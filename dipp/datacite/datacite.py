@@ -177,7 +177,7 @@ if __name__ == '__main__':
     #doi = '10.5072/DIPP-TEST1'
     doi = '10.5072/DIPP-TEST2'
     url = 'http://www.dipp.nrw.de/doi1'
-    md = codecs.open('beispiel.xml', 'r', encoding='utf-8').read()
+    md = codecs.open('../../example.xml', 'r', encoding='utf-8').read()
     test = False
 
     # read configuration
