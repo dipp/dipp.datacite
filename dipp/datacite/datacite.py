@@ -9,6 +9,7 @@ import logging
 import os.path
 import ConfigParser
 from resources import DOI, METADATA
+from endpoints import ENDPOINTS
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -115,6 +116,7 @@ class Client:
         status = response['status']
         logger.info(status)
         return status, content
+
 
     def modify_metadata(self):
         """URI: https://test.datacite.org/mds/metadata/{doi} where {doi} is a

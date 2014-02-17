@@ -1,0 +1,30 @@
+<resource xmlns="http://datacite.org/schema/kernel-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd">
+  <identifier identifierType="DOI">10.5072/DIPP-TEST1</identifier>
+  <creators>
+    <creator>
+      <creatorName>Doe, John</creatorName>
+    </creator>
+    <creator>
+      <creatorName>Reimer, Peter</creatorName>
+      <nameIdentifier nameIdentifierScheme="ORCID">0000-0002-3187-2536</nameIdentifier>
+    </creator>
+  </creators>
+  <titles>
+    <title xml:lang="de">Erster Test</title>
+  </titles>
+  <publisher>ich</publisher>
+  <publicationYear>2014</publicationYear>
+  <subjects>
+    <subject subjectScheme="DDC">070</subject>
+  </subjects>
+  <language>de</language>
+  <alternateIdentifiers>
+    <alternateIdentifier alternateIdentifierType="URN">urn:nbn:de:0009-0-18865</alternateIdentifier>
+  </alternateIdentifiers>
+  <rightsList>
+    <rights rightsURI="http://nbn-resolving.de/urn:nbn:de:0009-dppl-v3-de0">DPPL</rights>
+  </rightsList>
+  <descriptions>
+    <description descriptionType="SeriesInformation">Volume n/a, Issue n/a</description>
+  </descriptions>
+</resource>
