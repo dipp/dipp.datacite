@@ -97,7 +97,7 @@ class Client:
         logger.info(status)
         return status, content
 
-    def get_metadata(self, doi, testMode=0):
+    def get_metadata(self, doi):
         """URI: https://test.datacite.org/mds/metadata/{doi} where {doi} is a
         specific DOI.
 
@@ -175,7 +175,7 @@ def main():
 if __name__ == '__main__':
 
     #doi = '10.5072/DIPP-TEST1'
-    doi = '10.5072/DIPP-TEST2'
+    doi = '10.5072/DIPP-TEST6'
     url = 'http://www.dipp.nrw.de/doi1'
     md = codecs.open('../../example.xml', 'r', encoding='utf-8').read()
     test = False
@@ -192,11 +192,13 @@ if __name__ == '__main__':
     
         x = Client(user, password, endpoint, testMode=test)
         # print x.get_metadata(doi)
-        # print x.get_url(doi)
+        
         # print x.create_or_modify_doi()
-        print x.post_metadata(md)
+        #print x.post_metadata(md)
         #print x.create_or_modify_doi(doi, url)
         #print x.deactivate_doi(doi)
+        print x.get_metadata(doi)
+        
     else:
         print "%s does not exist" % config_file
     
