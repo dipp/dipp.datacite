@@ -11,7 +11,6 @@ import string
 import os.path
 import ConfigParser
 from resources import DOI, METADATA
-from endpoints import ENDPOINTS
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -21,7 +20,7 @@ console.setFormatter(formatter)
 logger.addHandler(console)
 log_string = "%s API %s method: status %s"
 
-"""https://mds.datacite.org/static/apidoc"""
+# https://mds.datacite.org/static/apidoc
 
 class Client:
     
@@ -33,25 +32,32 @@ class Client:
         self.auth_string = base64.encodestring('%s:%s' % (user, password))
 
     def _make_rest_uri(self, resource, doi=None):
+        """create the uri for the restfull webservice of datacite"""
         if self.testMode:
             query = 'testMode=true'
         else:
             query = ''
             
         if doi:
-            path = '/'.join((resource,doi))
+            path = '/'.join((resource, doi))
         else:
             path = resource
-        uri = urlparse.urlunparse(('https',self.endpoint,path,'',query,''))
-        logger.info(uri)
-        return uri
+        
+        if not self.endpoint:
+            logger.info('No valid endpoint specified.')
+            return None
+        else:
+            return urlparse.urlunparse(('https', self.endpoint, path, '', query, ''))
     
     def validate_doi(self, doi):
-        """check if the doi contains only the recommended charakters
+        """check if the doi contains only the recommended characters
         i'm pretty sure this could be done more elegant with reg exp...
         """  
         separator = '/'
-        allowed = list(string.ascii_lowercase) + ['-','.','_','+',':','/'] + [str(i) for i in range(0, 10)]
+        allowed = list(string.ascii_lowercase) + \
+                  ['-', '.', '_', '+', ':', '/'] + \
+                  [str(i) for i in range(0, 10)]
+                   
         parts = doi.strip().lower().split(separator)
         
         validity = True
@@ -66,7 +72,7 @@ class Client:
             for x in parts[1]:
                 if x not in allowed:
                     validity = False
-                    reason="character '%s' not allowed" % x
+                    reason = "character '%s' not allowed" % x
                     break
         logger.info('%s valid: %s, %s' % (doi, validity, reason))
         return validity
@@ -80,14 +86,17 @@ class Client:
         resource = DOI
         method = 'GET'
         uri = self._make_rest_uri(resource, doi=doi)
-        headers = {
-            'Accept':'application/xml',
-            'Authorization':'Basic ' + self.auth_string
-            }   
-        response, content = h.request(uri, method, headers=headers)
-        status = response['status']
-        logger.info(log_string % (resource, method, status))
-        return status, content
+        if not uri:
+            return None, None
+        else:
+            headers = {
+                'Accept':'application/xml',
+                'Authorization':'Basic ' + self.auth_string
+                }   
+            response, content = h.request(uri, method, headers=headers)
+            status = response['status']
+            logger.info(log_string % (resource, method, status))
+            return status, content
 
     def create_or_modify_doi(self, doi, url):
         """URI: https://test.datacite.org/mds/doi
@@ -100,7 +109,7 @@ class Client:
         h = httplib2.Http()
         resource = DOI
         method = 'PUT'
-        uri = self._make_rest_uri(resource,doi=doi)
+        uri = self._make_rest_uri(resource, doi=doi)
         body_unicode = "doi=%s\n url=%s" % (doi, url)
         body = body_unicode.encode('utf-8')
         headers = {
@@ -138,7 +147,7 @@ class Client:
         """
 
         h = httplib2.Http()
-        uri = self._make_rest_uri(METADATA,doi=doi)
+        uri = self._make_rest_uri(METADATA, doi=doi)
         method = 'GET'
         headers = {
             'Accept':'application/xml',
@@ -163,7 +172,7 @@ class Client:
         contain valid XML.
         """
 
-    def deactivate_doi(self,doi):
+    def deactivate_doi(self, doi):
         """URI: https://test.datacite.org/mds/metadata/{doi} where {doi} is a
         specific DOI.
 
@@ -171,7 +180,7 @@ class Client:
         new metadata or set the isActive-flag in the user interface.
         """
         h = httplib2.Http()
-        uri = self._make_rest_uri(METADATA,doi=doi)
+        uri = self._make_rest_uri(METADATA, doi=doi)
         method = 'DELETE'
         headers = {
             'Authorization':'Basic ' + self.auth_string
@@ -200,9 +209,9 @@ def main():
 
     parser = argparse.ArgumentParser(description='Manages DOIs at DataCite')
     parser.add_argument('doi', help='DOI')
-    parser.add_argument('-u','--url', help='Url of article')
-    parser.add_argument('-c','--conf', required=True, help='Configuration file with access data')
-    parser.add_argument('-n','--dry-run', action='store_true', dest='testMode', help='The request will not change the database nor will the DOI handle be registered or updated')
+    parser.add_argument('-u', '--url', help='Url of article')
+    parser.add_argument('-c', '--conf', required=True, help='Configuration file with access data')
+    parser.add_argument('-n', '--dry-run', action='store_true', dest='testMode', help='The request will not change the database nor will the DOI handle be registered or updated')
     
     args = parser.parse_args()
     config_file = args.conf
@@ -224,8 +233,6 @@ def main():
     client = Client(user, password, prefix, endpoint, testMode=args.testMode)
     print client.get_url(args.doi)
     print client.validate_doi(args.doi)
-    
-
 
 if __name__ == '__main__':
 
@@ -255,22 +262,22 @@ if __name__ == '__main__':
         #print x.deactivate_doi(doi)
         print prefix
         print doi, x.validate_doi(doi)
-        doi=""
+        doi = ""
         print doi, x.validate_doi(doi)
         
-        doi="10.5072/SDFas-sdf123"
+        doi = "10.5072/SDFas-sdf123"
         print doi, x.validate_doi(doi)
         
-        doi="10.5072sdfas-sdf"
+        doi = "10.5072sdfas-sdf"
         print doi, x.validate_doi(doi)
         
-        doi="10.5072/sdfas#sdf"
+        doi = "10.5072/sdfas#sdf"
         print doi, x.validate_doi(doi)
         
-        doi="10.5073/sdfas#sdf"
+        doi = "10.5073/sdfas#sdf"
         print doi, x.validate_doi(doi)
         
-        doi="10.5072/sdfas/sdf"
+        doi = "10.5072/sdfas/sdf"
         print doi, x.validate_doi(doi)
         
     else:
