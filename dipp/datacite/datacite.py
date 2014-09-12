@@ -11,6 +11,7 @@ import string
 import os.path
 import ConfigParser
 from resources import DOI, METADATA
+from dipp.datacite import __version__
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -210,10 +211,16 @@ def main():
     parser = argparse.ArgumentParser(description='Manages DOIs at DataCite')
     parser.add_argument('doi', help='DOI')
     parser.add_argument('-u', '--url', help='Url of article')
-    parser.add_argument('-c', '--conf', required=True, help='Configuration file with access data')
+    parser.add_argument('-c', '--conf', help='Configuration file with access data')
     parser.add_argument('-n', '--dry-run', action='store_true', dest='testMode', help='The request will not change the database nor will the DOI handle be registered or updated')
+    parser.add_argument('-v', '--version', action="store_true", help='Print version number and exit')
     
     args = parser.parse_args()
+    
+    if args.version:
+        print  __version__
+        sys.exit(0)
+    
     config_file = args.conf
 
     if os.path.isfile(config_file):
