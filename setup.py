@@ -34,6 +34,7 @@ setup(name='dipp.datacite',
       install_requires=[
           'setuptools',
           'httplib2',
+          'ssl'
           # -*- Extra requirements: -*-
       ],
      entry_points={

@@ -1,6 +1,22 @@
 dipp.datacite
 #############
 
-Posting, registering and updating DOI at `DataCite
-<http://www.datacite.org/>`_.
+Posting, registering and updating DOI at the `DataCite Metadata Store 
+<http://mds.datacite.org/>`_.
+
+Installation
+************
+
+DataCite does not support bare HTTP, thus we need to install the Python SSL library.
+To avoid problems when using datcite from within plone we need the egg unzipped::
+
+    $ easy_install --always-unzip ssl 
+
+The Python modules are installed by running::
+
+    $ easy_install -f http://alkyoneus.hbz-nrw.de/dist -n -U dipp.datacite
+
+
+
+
 
