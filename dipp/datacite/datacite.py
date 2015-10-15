@@ -14,11 +14,6 @@ from resources import DOI, METADATA
 from dipp.datacite import __version__
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-console = logging.StreamHandler()
-formatter = logging.Formatter('%(levelname)s - %(message)s')
-console.setFormatter(formatter)
-logger.addHandler(console)
 log_string = "%s API %s method: status %s"
 
 # https://mds.datacite.org/static/apidoc
@@ -45,15 +40,19 @@ class Client:
             path = resource
         
         if not self.endpoint:
-            logger.info('No valid endpoint specified.')
-            return None
+            logger.error('No valid endpoint specified.')
+            rest_uri = None
         else:
-            return urlparse.urlunparse(('https', self.endpoint, path, '', query, ''))
+            rest_uri = urlparse.urlunparse(('https', self.endpoint, path, '', query, ''))
+        logger.debug("REST URI %s" % rest_uri)
+        return rest_uri
     
     def validate_doi(self, doi):
-        """check if the doi contains only the recommended characters
-        i'm pretty sure this could be done more elegant with reg exp...
-        """  
+        """Check if the doi contains only the recommended characters.
+        
+        I'm pretty sure this could be done more elegant with reg exp...
+        """
+          
         separator = '/'
         allowed = list(string.ascii_lowercase) + \
                   ['-', '.', '_', '+', ':', '/'] + \
@@ -79,10 +78,12 @@ class Client:
         return validity
 
     def get_url(self, doi):
-        """URI: https://test.datacite.org/mds/doi/{doi} where {doi} is a
+        """Return the URL associated with a given URL.
+        
+        URI: https://test.datacite.org/mds/doi/{doi} where {doi} is a
         specific DOI.
-        This GET request returns an URL associated with a given DOI.
         """
+        
         h = httplib2.Http()
         resource = DOI
         method = 'GET'
@@ -100,13 +101,16 @@ class Client:
             return status, content
 
     def create_or_modify_doi(self, doi, url):
-        """URI: https://test.datacite.org/mds/doi
-
+        """Update URL of an existent DOI or mint a new DOI.
+        
+        Adding/Updating Metadata is a seperate step.
+        URI: https://test.datacite.org/mds/doi
         POST will mint new DOI if specified DOI doesn't exist. This method will
         attempt to update URL if you specify existing DOI. Standard domains and
         quota restrictions check will be performed. A Datacentre's doiQuotaUsed
         will be increased by 1. A new record in Datasets will be created .
         """
+        
         h = httplib2.Http()
         resource = DOI
         method = 'PUT'
@@ -160,26 +164,14 @@ class Client:
         return status, content
 
 
-    def modify_metadata(self):
-        """URI: https://test.datacite.org/mds/metadata/{doi} where {doi} is a
-        specific DOI.
-
-        This request returns the most recent version of metadata associated
-        with a given DOI.
-
-        URI: https://test.datacite.org/mds/metadata
-
-        This request stores new version of metadata. The request body must
-        contain valid XML.
-        """
-
     def deactivate_doi(self, doi):
-        """URI: https://test.datacite.org/mds/metadata/{doi} where {doi} is a
-        specific DOI.
-
-        This  DELETE request marks a dataset as 'inactive'. To activate it again, POST
+        """Mark a dataset as inactive.
+        
+        URI: https://test.datacite.org/mds/metadata/{doi} where {doi} is a
+        specific DOI. This  DELETE request marks a dataset as 'inactive'. To activate it again, POST
         new metadata or set the isActive-flag in the user interface.
         """
+        
         h = httplib2.Http()
         uri = self._make_rest_uri(METADATA, doi=doi)
         method = 'DELETE'
@@ -187,8 +179,9 @@ class Client:
             'Authorization':'Basic ' + self.auth_string
             }
         response, content = h.request(uri, method, headers=headers)
-        logger.info(response['status'])
-        return content
+        status = response['status']
+        logger.info(status)
+        return status, content
 
     def get_media(self):
         """URI: https://test.datacite.org/mds/media/{doi} where {doi} is a
@@ -207,19 +200,24 @@ class Client:
         """
 
 def main():
+    
+    logger.setLevel(logging.DEBUG)
+    console = logging.StreamHandler()
+    formatter = logging.Formatter('%(levelname)s: %(message)s')
+    console.setFormatter(formatter)
+    logger.addHandler(console)
 
     parser = argparse.ArgumentParser(description='Manages DOIs at DataCite')
     parser.add_argument('doi', help='DOI')
     parser.add_argument('-u', '--url', help='Url of article')
+    parser.add_argument('-d', '--deactivate',  action='store_true', help='Deactivate DOI.')
     parser.add_argument('-c', '--conf', help='Configuration file with access data')
     parser.add_argument('-n', '--dry-run', action='store_true', dest='testMode', help='The request will not change the database nor will the DOI handle be registered or updated')
     parser.add_argument('-v', '--version', action="store_true", help='Print version number and exit')
-    
+
+        
     args = parser.parse_args()
     
-    if args.version:
-        print  __version__
-        sys.exit(0)
     
     config_file = args.conf
 
@@ -234,18 +232,29 @@ def main():
         print "%s does not exist" % config_file
         sys.exit()
 
-    logger.info('user:   %s' % user)
-    logger.info('prefix: %s' % prefix)
+    logger.info('user %s' % user)
+    logger.info('prefix %s' % prefix)
 
     client = Client(user, password, prefix, endpoint, testMode=args.testMode)
-    print client.get_url(args.doi)
-    print client.validate_doi(args.doi)
+
+    if args.version:
+        print  __version__
+        sys.exit(0)
+    elif args.deactivate:
+        print client.deactivate_doi(args.doi) 
+    else:
+        print client.get_url(args.doi)
+    
 
 if __name__ == '__main__':
 
+    logger.setLevel(logging.INFO)
+    console = logging.StreamHandler()
+    logger.addHandler(console)
+
     #doi = '10.5072/DIPP-TEST1'
-    doi = '10.5072/DIPP-TEST6'
-    url = 'http://www.dipp.nrw.de/doi1'
+    doi = '10.5072/DIPP-TEST15'
+    url = 'http://www.dipp.nrw.de/doi15'
     md = codecs.open('../../example.xml', 'r', encoding='utf-8').read()
     test = False
 
@@ -259,14 +268,15 @@ if __name__ == '__main__':
         password = config.get('DataCite','password')
         prefix = config.get('DataCite','prefix')
         endpoint = config.get('DataCite','endpoint')
-    
+         
         x = Client(user, password, prefix, endpoint, testMode=test)
         # print x.get_metadata(doi)
         
         # print x.create_or_modify_doi()
         #print x.post_metadata(md)
-        #print x.create_or_modify_doi(doi, url)
+        print x.create_or_modify_doi(doi, url)
         #print x.deactivate_doi(doi)
+        """
         print prefix
         print doi, x.validate_doi(doi)
         doi = ""
@@ -286,7 +296,7 @@ if __name__ == '__main__':
         
         doi = "10.5072/sdfas/sdf"
         print doi, x.validate_doi(doi)
-        
+        """
     else:
         print "%s does not exist" % config_file
     
