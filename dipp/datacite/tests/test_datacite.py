@@ -3,7 +3,7 @@ import sys
 import os.path
 import ConfigParser
 
-from datacite import Client
+from dipp.datacite.datacite import Client
 
 config_file = "/files/etc/datacite/dev.conf"
 
