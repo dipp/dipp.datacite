@@ -252,12 +252,6 @@ if __name__ == '__main__':
     console = logging.StreamHandler()
     logger.addHandler(console)
 
-    #doi = '10.5072/DIPP-TEST1'
-    doi = '10.5072/DIPP-TEST15'
-    url = 'http://www.dipp.nrw.de/doi15'
-    md = codecs.open('../../example.xml', 'r', encoding='utf-8').read()
-    test = False
-
     # read configuration
     
     config_file = "/files/etc/datacite/dev.conf"
@@ -268,14 +262,23 @@ if __name__ == '__main__':
         password = config.get('DataCite','password')
         prefix = config.get('DataCite','prefix')
         endpoint = config.get('DataCite','endpoint')
-         
-        x = Client(user, password, prefix, endpoint, testMode=test)
-        # print x.get_metadata(doi)
+    
+        doi = '10.5072/DIPP-TEST15'
+        doi = ' '
+        url = 'http://www.dipp.nrw.de/doi15'
+        md = codecs.open('../../example.xml', 'r', encoding='utf-8').read()
         
+        logger.info("prefix %s" % prefix)
+        logger.info("DOI %s" % doi)
+
+        x = Client(user, password, prefix, endpoint, testMode=False)
+        
+        print x.get_metadata(doi)
+         
         # print x.create_or_modify_doi()
-        #print x.post_metadata(md)
-        print x.create_or_modify_doi(doi, url)
-        #print x.deactivate_doi(doi)
+        # print x.post_metadata(md)
+        # print x.create_or_modify_doi(doi, url)
+        # print x.deactivate_doi(doi)
         """
         print prefix
         print doi, x.validate_doi(doi)
