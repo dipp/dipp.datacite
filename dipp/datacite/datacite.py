@@ -62,7 +62,10 @@ class Client:
         
         validity = True
         reason = ""
-        if len(parts) < 2:
+        if doi == "":
+            validity = False
+            reason = "DOI empty"
+        elif len(parts) < 2:
             validity = False
             reason = "separator '%s' missing" % separator
         elif parts[0] != self.prefix:
@@ -75,7 +78,7 @@ class Client:
                     reason = "character '%s' not allowed" % x
                     break
         logger.info('%s valid: %s, %s' % (doi, validity, reason))
-        return validity
+        return validity, reason
 
     def get_url(self, doi):
         """Return the URL associated with a given URL.
@@ -273,33 +276,20 @@ if __name__ == '__main__':
 
         x = Client(user, password, prefix, endpoint, testMode=False)
         
-        print x.get_metadata(doi)
+        
          
         # print x.create_or_modify_doi()
         # print x.post_metadata(md)
         # print x.create_or_modify_doi(doi, url)
         # print x.deactivate_doi(doi)
-        """
-        print prefix
-        print doi, x.validate_doi(doi)
+        
+        
         doi = ""
         print doi, x.validate_doi(doi)
         
-        doi = "10.5072/SDFas-sdf123"
+        doi = "10.5072/SDFas/sdf123"
         print doi, x.validate_doi(doi)
         
-        doi = "10.5072sdfas-sdf"
-        print doi, x.validate_doi(doi)
-        
-        doi = "10.5072/sdfas#sdf"
-        print doi, x.validate_doi(doi)
-        
-        doi = "10.5073/sdfas#sdf"
-        print doi, x.validate_doi(doi)
-        
-        doi = "10.5072/sdfas/sdf"
-        print doi, x.validate_doi(doi)
-        """
     else:
         print "%s does not exist" % config_file
     
