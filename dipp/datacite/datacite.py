@@ -280,7 +280,7 @@ if __name__ == '__main__':
          
         # print x.create_or_modify_doi()
         # print x.post_metadata(md)
-        # print x.create_or_modify_doi(doi, url)
+        print x.create_or_modify_doi(doi, url)
         # print x.deactivate_doi(doi)
         
         

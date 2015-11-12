@@ -1,3 +1,3 @@
 # endpoints
-ENDPOINTS = {'test' : 'test.datacite.org/mds',
+ENDPOINTS = {'test' : 'mds.test.datacite.org',
              'live' : 'mds.datacite.org'}
