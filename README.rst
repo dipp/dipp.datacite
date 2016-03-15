@@ -16,7 +16,7 @@ The Python modules are installed by running::
 
     $ easy_install -f http://alkyoneus.hbz-nrw.de/dist -n -U dipp.datacite
 
-
+Note that test.datacite.org uses SNI, which is not supported by httplib2/Python 2.4 
 
 
 
