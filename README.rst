@@ -1,6 +1,10 @@
 dipp.datacite
 #############
 
+.. image:: https://travis-ci.org/dipp/dipp.datacite.svg?branch=master
+    :target: https://travis-ci.org/dipp/dipp.datacite
+
+
 Posting, registering and updating DOI at the `DataCite Metadata Store 
 <http://mds.datacite.org/>`_.
 
