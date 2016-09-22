@@ -265,9 +265,9 @@ if __name__ == '__main__':
         password = config.get('DataCite','password')
         prefix = config.get('DataCite','prefix')
         endpoint = config.get('DataCite','endpoint')
-    
+        
         doi = '10.5072/DIPP-TEST15'
-        doi = ' '
+        #doi = ' '
         url = 'http://www.dipp.nrw.de/doi15'
         md = codecs.open('../../example.xml', 'r', encoding='utf-8').read()
         
@@ -280,15 +280,16 @@ if __name__ == '__main__':
          
         # print x.create_or_modify_doi()
         # print x.post_metadata(md)
-        print x.create_or_modify_doi(doi, url)
+        # print x.create_or_modify_doi(doi, url)
         # print x.deactivate_doi(doi)
         
         
-        doi = ""
-        print doi, x.validate_doi(doi)
+        doi = "10.5072/dipp-joe1234"
+        print doi, x.get_url(doi)
+        #print doi, x.validate_doi(doi)
         
         doi = "10.5072/SDFas/sdf123"
-        print doi, x.validate_doi(doi)
+        #print doi, x.validate_doi(doi)
         
     else:
         print "%s does not exist" % config_file
